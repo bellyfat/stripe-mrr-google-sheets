@@ -39,9 +39,10 @@ try:
   invoices = petaldata.resource.stripe.Invoice()
   invoices.load()
 
-  # Statuses can change, so fetch all invoices over the last 30 days
+  # Statuses can change, so fetch all invoices over the last 45 days. Invoices beyond this
+  # timeframe will not be updated.
   # TODO - only run this if loaded data from a pickle file
-  # invoices.update(petaldata.util.days_ago(45))
+  invoices.update(petaldata.util.days_ago(45))
   invoices.save()
 
   # Authorize Google Sheets
@@ -51,6 +52,7 @@ try:
 
   # Generate the report dataframe
 
+  # Stripe's dashboard is in Mountain Time.
   report = petaldata.resource.stripe.reports.MRRByMonth(invoices)
   df = report.to_frame(tz='America/Denver')
 
