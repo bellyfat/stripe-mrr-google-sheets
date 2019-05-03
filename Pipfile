@@ -12,8 +12,8 @@ name = "pypi"
 [packages]
 
 twine = "*"
-numpy = "*"
 pandas = "*"
 python-dotenv = "*"
 smart-open = "*"
 pygsheets = "*"
+petaldata = "*"
