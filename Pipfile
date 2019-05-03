@@ -16,4 +16,5 @@ pandas = "*"
 python-dotenv = "*"
 smart-open = "*"
 pygsheets = "*"
-petaldata = ">=0.0.6"
+#petaldata = { git = 'https://github.com/itsderek23/petaldata-python.git' }
+petaldata = {path = "/Users/dlite/projects/petaldata-python", editable = true}
