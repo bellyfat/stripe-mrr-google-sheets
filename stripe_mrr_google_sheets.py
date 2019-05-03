@@ -74,5 +74,6 @@ try:
   wks = sh.worksheet_by_title("Summary")
   wks.cell('I3').value = str(datetime.now())
 
+  sys.stdout.flush()
 except Exception as e:
   capture_exception(e)
