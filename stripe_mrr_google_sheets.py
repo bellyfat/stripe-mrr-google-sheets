@@ -13,7 +13,6 @@ import sys
 import petaldata
 import petaldata.util
 from petaldata.resource.stripe.reports import *
-from petaldata.resource.stripe.reports.adjusted_invoices import AdjustedInvoices
 import json
 import pandas as pd
 import datetime
