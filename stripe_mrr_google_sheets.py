@@ -10,13 +10,19 @@ from sentry_sdk import capture_exception
 sentry_sdk.init(os.getenv("SENTRY_DSN"))
 
 import sys
+
+# Load Petaldata locally. 
+if (os.getenv("DEV") == 'true'):
+  print("Loading Petaldata locally")
+  sys.path.append("/Users/dlite/projects/petaldata-python")
+
 import petaldata
 import petaldata.util
 from petaldata.resource.stripe.reports import *
 import json
 import pandas as pd
 import datetime
-from datetime import datetime
+from datetime import datetime, timedelta
 
 # Exporting to Google Sheets
 import google
@@ -32,15 +38,17 @@ invoices.load()
 # Statuses can change, so fetch all invoices over the last 45 days. Invoices beyond this
 # timeframe will not be updated.
 # TODO - only run this if loaded data from a pickle file
-invoices.update(petaldata.util.days_ago(45))
-invoices.save()
+if (os.getenv("DEV") != 'true'):
+  invoices.update(petaldata.util.days_ago(45))
+  invoices.save()
 
 # Authorize Google Sheets
 creds = service_account.Credentials.from_service_account_info(json.loads(os.getenv("GOOGLE_SERVICE_ACCOUNT_INFO")))
 
 # To re-run month end:
 # end_time = pd.Timestamp(datetime.now()).floor(freq='D') - pd.offsets.MonthBegin(1)
-end_time = datetime.now()
+# Subtract 2 hours to account for invoices being finalized.
+end_time = datetime.now().astimezone() - timedelta(hours=2)
 reports = petaldata.resource.stripe.reports.all(AdjustedInvoices(invoices,config.TZ, end_time=end_time),config.TZ, end_time=end_time)
 list(map(lambda report: report.to_gsheet(creds,os.getenv("GOOGLE_SHEET")),reports))
 
