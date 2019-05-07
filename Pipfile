@@ -7,7 +7,7 @@ name = "pypi"
 
 [dev-packages]
 
-#petaldata = {path = "/Users/dlite/projects/petaldata-python", editable = true}
+petaldata = {path = "/Users/dlite/projects/petaldata-python", editable = true}
 
 [packages]
 
@@ -16,5 +16,5 @@ pandas = "*"
 python-dotenv = "*"
 smart-open = "*"
 pygsheets = "*"
-petaldata = { git = 'https://github.com/itsderek23/petaldata-python.git', ref = 'a938845' }
+petaldata = { git = 'https://github.com/itsderek23/petaldata-python.git', ref = '651e9c9' }
 sentry-sdk= "==0.7.14"
