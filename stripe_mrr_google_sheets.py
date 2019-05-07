@@ -41,7 +41,7 @@ creds = service_account.Credentials.from_service_account_info(json.loads(os.gete
 # To re-run month end:
 # end_time = pd.Timestamp(datetime.now()).floor(freq='D') - pd.offsets.MonthBegin(1)
 end_time = datetime.now()
-reports = petaldata.resource.stripe.reports.all(invoices,config.TZ, end_time=end_time)
+reports = petaldata.resource.stripe.reports.all(AdjustedInvoices(invoices,config.TZ, end_time=end_time),config.TZ, end_time=end_time)
 list(map(lambda report: report.to_gsheet(creds,os.getenv("GOOGLE_SHEET")),reports))
 
 # To debug a single report:
