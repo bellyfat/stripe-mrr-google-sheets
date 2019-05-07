@@ -16,5 +16,5 @@ pandas = "*"
 python-dotenv = "*"
 smart-open = "*"
 pygsheets = "*"
-petaldata = { git = 'https://github.com/itsderek23/petaldata-python.git' }
+petaldata = { git = 'https://github.com/itsderek23/petaldata-python.git', editable = true }
 sentry-sdk= "==0.7.14"
