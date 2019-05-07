@@ -39,7 +39,6 @@ invoices.update(petaldata.util.days_ago(30))
 # invoices.save()
 
 # Authorize
-# https://console.developers.google.com/apis/api/drive.googleapis.com/overview?project=scout-biz-metrics&authuser=1&organizationId=420515861971
 gc=pygsheets.authorize(service_file='gdrive_service_account.json')
 
 df_invoices = invoices.df

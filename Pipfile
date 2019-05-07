@@ -7,7 +7,7 @@ name = "pypi"
 
 [dev-packages]
 
-petaldata = {path = "/Users/dlite/projects/petaldata-python", editable = true}
+#petaldata = {path = "/Users/dlite/projects/petaldata-python", editable = true}
 
 [packages]
 

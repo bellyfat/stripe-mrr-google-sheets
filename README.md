@@ -18,8 +18,16 @@ AWS_BUCKET=""
 # The contents of the service account creds file provided by Google in JSON format
 GOOGLE_SERVICE_ACCOUNT_INFO = {}
 
-# Name of the Google Sheet the script will update
+# Name of the Google Sheet the script will update.
+# The user associated wit the Google auth cruds must have read/write access to this sheet.
 GOOGLE_SHEET=""
+```
+
+Optional:
+
+```
+SENTRY_DSN=""
+SENTRY_ENVIRONMENT=""
 ```
 
 ## Development
@@ -57,11 +65,6 @@ You can also enter interactive mode after running the script via the `-i` flag:
 
 ```
 heroku run "python -i stripe_mrr_google_sheets.py"
->>> df
-            amount_due  amount_paid  amount_due_per_month  amount_paid_per_month  ongoing_annual_subscriptions   paid  created  customers
-created                                                                                                                                  
-2017-05-31    10000.00  ...
-
 ```
 
 `CTRL+C` to exit.

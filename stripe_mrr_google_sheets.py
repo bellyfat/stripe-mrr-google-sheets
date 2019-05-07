@@ -1,79 +1,52 @@
-# General Setup
 import os
 
+from dotenv import load_dotenv
+load_dotenv(override=True)
+
+# Load+Configure Sentry as early as possible to catch exceptions.
+# Sentry is configured here vs. config so we can report import errors.
 import sentry_sdk
 from sentry_sdk import capture_exception
 sentry_sdk.init(os.getenv("SENTRY_DSN"))
 
-try:
-  from dotenv import load_dotenv
-  load_dotenv(override=True)
+import sys
+import petaldata
+import petaldata.util
+from petaldata.resource.stripe.reports import *
+import json
+import pandas as pd
+import datetime
+from datetime import datetime
 
-  import sys
-  import petaldata
-  import petaldata.util
-  import json
-  import pandas as pd
-  import datetime
-  from datetime import datetime
+# Exporting to Google Sheets
+import google
+from google.oauth2 import service_account
+import pygsheets
 
-  # Exporting to Google Sheets
-  import google
-  from google.oauth2 import service_account
-  import pygsheets
+import config
 
-  # Configuration
-  petaldata.api_base = 'https://petaldata.herokuapp.com'
-  petaldata.resource.stripe.api_key = os.getenv("STRIPE_API_KEY")
-  petaldata.storage.Local.dir = os.getcwd() + "/tmp/"
+# Load Stripe Invoices
+invoices = petaldata.resource.stripe.Invoice()
+invoices.load()
 
-  petaldata.storage.Local.enabled = False
-  petaldata.storage.S3.enabled = True
+# Statuses can change, so fetch all invoices over the last 45 days. Invoices beyond this
+# timeframe will not be updated.
+# TODO - only run this if loaded data from a pickle file
+invoices.update(petaldata.util.days_ago(45))
+invoices.save()
 
-  petaldata.storage.S3.aws_access_key_id = os.getenv("AWS_ACCESS_KEY_ID")
-  petaldata.storage.S3.aws_secret_access_key = os.getenv("AWS_SECRET_ACCESS_KEY")
-  petaldata.storage.S3.bucket_name = os.getenv("AWS_BUCKET")
+# Authorize Google Sheets
+creds = service_account.Credentials.from_service_account_info(json.loads(os.getenv("GOOGLE_SERVICE_ACCOUNT_INFO")))
 
-  # Loads Stripe Invoices, using S3 for pickle file storage. 
+# To re-run month end:
+# end_time = pd.Timestamp(datetime.now()).floor(freq='D') - pd.offsets.MonthBegin(1)
+end_time = datetime.now()
+reports = petaldata.resource.stripe.reports.all(invoices,config.TZ, end_time=end_time)
+list(map(lambda report: report.to_gsheet(creds,os.getenv("GOOGLE_SHEET")),reports))
 
-  invoices = petaldata.resource.stripe.Invoice()
-  invoices.load()
+# To debug a single report:
+# report = Summary(invoices,tz=config.TZ,end_time=end_time)
+# # frame = report.to_frame()
+# report.to_gsheet(creds,os.getenv("GOOGLE_SHEET"))
 
-  # Statuses can change, so fetch all invoices over the last 45 days. Invoices beyond this
-  # timeframe will not be updated.
-  # TODO - only run this if loaded data from a pickle file
-  invoices.update(petaldata.util.days_ago(45))
-  invoices.save()
-
-  # Authorize Google Sheets
-  # https://console.developers.google.com/apis/api/drive.googleapis.com/overview?project=scout-biz-metrics&authuser=1&organizationId=420515861971
-  creds = service_account.Credentials.from_service_account_info(json.loads(os.getenv("GOOGLE_SERVICE_ACCOUNT_INFO")))
-  gc = pygsheets.authorize(custom_credentials=creds.with_scopes(['https://www.googleapis.com/auth/spreadsheets', 'https://www.googleapis.com/auth/drive.metadata.readonly']))
-
-  # Generate the report dataframe
-
-  # Stripe's dashboard is in Mountain Time.
-  report = petaldata.resource.stripe.reports.MRRByMonth(invoices)
-  df = report.to_frame(tz='America/Denver')
-
-  # Save report to Google Sheets
-
-  print("Opening Google Sheet...")
-
-  # Must share sheet with "client_email" from JSON creds file
-  sh = gc.open(os.getenv("GOOGLE_SHEET"))
-
-  wks = sh.worksheet_by_title("Monthly MRR via Invoices")
-  print("\t...updating MRR worksheet")
-  wks.clear(fields="*")
-  wks.set_dataframe(df,(1,1), copy_index=True, nan="")
-  print("\t...Done.")
-
-  ### Record updated time
-
-  wks = sh.worksheet_by_title("Summary")
-  wks.cell('I3').value = str(datetime.now())
-
-  sys.stdout.flush()
-except Exception as e:
-  capture_exception(e)
+sys.stdout.flush()
