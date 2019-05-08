@@ -12,5 +12,5 @@ petaldata.storage.S3.aws_access_key_id = os.getenv("AWS_ACCESS_KEY_ID")
 petaldata.storage.S3.aws_secret_access_key = os.getenv("AWS_SECRET_ACCESS_KEY")
 petaldata.storage.S3.bucket_name = os.getenv("AWS_BUCKET")
 
-# Stripe's dashboard is in Mountain Time.
+# Make consistent with your TZ in Stripe's account settings: https://dashboard.stripe.com/account
 TZ = 'America/Denver'
