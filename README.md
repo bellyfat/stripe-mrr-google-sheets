@@ -52,7 +52,7 @@ Setting the env. var `DEV=true` will:
 The app can be deployed to Heroku. Follow these steps:
 
 * Create a Heroku app. Use GitHub for the deployment method and wire up this repo.
-* Provide values for the [environment variables](Configuration) as Heroku config vars.
+* Provide values for the [environment variables](#Configuration) as Heroku config vars.
 * Install the Heroku Scheduler addon via `heroku addons:create scheduler:standard`.
 * Open scheduler via `heroku addons:open scheduler`.
 * Add a job to run every hour. Enter `python stripe_mrr_google_sheets.py` for the job.
