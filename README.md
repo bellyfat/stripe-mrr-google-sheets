@@ -19,7 +19,7 @@ AWS_BUCKET=""
 GOOGLE_SERVICE_ACCOUNT_INFO = {}
 
 # Name of the Google Sheet the script will update.
-# The user associated wit the Google auth cruds must have read/write access to this sheet.
+# The user associated wit the Google auth creds must have read/write access to this sheet.
 GOOGLE_SHEET=""
 ```
 
@@ -41,6 +41,11 @@ To examine output after running the script:
 ```
 python -i stripe_mrr_google_sheets.py
 ```
+
+Setting the env. var `DEV=true` will:
+
+* Prevent fetching invoice updates (takes time)
+* Load the `petaldata` package from disk. I haven't had much lock w/`Pipfile` `[dev-packages]`.
 
 ## Deployment
 
