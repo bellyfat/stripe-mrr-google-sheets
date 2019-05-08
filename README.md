@@ -45,14 +45,14 @@ python -i stripe_mrr_google_sheets.py
 Setting the env. var `DEV=true` will:
 
 * Prevent fetching invoice updates (takes time)
-* Load the `petaldata` package from disk. I haven't had much lock w/`Pipfile` `[dev-packages]`.
+* Load the `petaldata` package from disk. I haven't had much luck w/`Pipfile` `[dev-packages]`.
 
 ## Deployment
 
 The app can be deployed to Heroku. Follow these steps:
 
 * Create a Heroku app. Use GitHub for the deployment method and wire up this repo.
-* Provide values for the above environment variables as Heroku config vars.
+* Provide values for the [environment variables](Configuration) as Heroku config vars.
 * Install the Heroku Scheduler addon via `heroku addons:create scheduler:standard`.
 * Open scheduler via `heroku addons:open scheduler`.
 * Add a job to run every hour. Enter `python stripe_mrr_google_sheets.py` for the job.
